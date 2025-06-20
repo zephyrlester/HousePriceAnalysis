@@ -1,22 +1,35 @@
 # 3_analysis.py
+# ------------------------------------------
+# 本脚本用于对清洗后的成都二手房数据进行可视化分析。
+# 主要功能：
+# 1. 加载数据
+# 2. 生成各类可视化图表（地图、柱状图、饼图、散点图、箱线图、词云等）
+# 3. 各函数均返回pyecharts图表对象，供Web端或Jupyter展示
+# 依赖库：pandas, pyecharts
+# ------------------------------------------
+
 import pandas as pd
 
 from pyecharts import options as opts
+from pyecharts.charts import Map, Bar, Pie, Scatter, Boxplot, WordCloud, Line
 
-from pyecharts.charts import Map, Bar,Pie, Scatter, Boxplot, WordCloud,Line
 
 def load_data(filepath='chengdu_cleaned_data.csv'):
-    """加载清洗后的数据"""
+    """
+    加载清洗后的数据
+    """
     try:
         return pd.read_csv(filepath)
     except FileNotFoundError:
         print(f"错误: 未找到清洗后的数据文件 '{filepath}'。请先运行 2_data_cleaner.py。")
         return None
 
+
 def create_price_map(df):
-    """生成成都各区平均单价地图"""
+    """
+    生成成都各区平均单价地图
+    """
     district_price = df.groupby('District')['UnitPrice'].mean().round(0).sort_values(ascending=False)
-    
     c = (
         Map()
         .add("平均单价(元/平米)", [list(z) for z in zip(district_price.index, district_price.values)], "成都")
@@ -26,6 +39,7 @@ def create_price_map(df):
         )
     )
     return c
+
 
 def create_district_bar(df):
     """生成各区房源数量(柱状图)与平均总价(折线图)的混合图 (修正版)"""
@@ -79,6 +93,7 @@ def create_district_bar(df):
     bar.overlap(line)
     return bar
 
+
 def create_layout_pie(df):
     """生成户型分布饼图 (简化版)"""
     layout_count = df['Layout'].value_counts().head(10)
@@ -99,6 +114,8 @@ def create_layout_pie(df):
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c} ({d}%)"))
     )
     return c
+
+
 def create_area_price_scatter(df):
     """生成面积与总价关系散点图"""
     c = (
@@ -113,6 +130,7 @@ def create_area_price_scatter(df):
         )
     )
     return c
+
 
 def create_decoration_boxplot(df):
     """生成不同装修情况的房价箱线图 (修正版)"""
@@ -140,6 +158,7 @@ def create_decoration_boxplot(df):
     
     # 7. 返回完整的图表对象
     return boxplot_chart
+
 
 def create_community_wordcloud(df):
     """生成热门小区词云 (修正版)"""
@@ -169,6 +188,8 @@ def create_community_wordcloud(df):
         )
     )
     return c
+
+
 def create_kmeans_scatter(df_clustered):
     """创建K-Means聚类结果的散点图"""
     scatter = Scatter(init_opts=opts.InitOpts(width="100%", height="600px"))

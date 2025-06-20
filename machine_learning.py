@@ -1,4 +1,12 @@
 # 3b_machine_learning.py
+# ------------------------------------------
+# 本脚本用于对成都二手房数据进行聚类分析和房价预测建模。
+# 主要功能：
+# 1. K-Means聚类分析
+# 2. 随机森林回归预测房价
+# 依赖库：pandas, sklearn, numpy
+# ------------------------------------------
+
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -8,7 +16,9 @@ from sklearn import metrics
 import numpy as np
 
 def run_kmeans_clustering(data_path='chengdu_cleaned_data.csv', n_clusters=4):
-    """执行K-Means聚类分析"""
+    """
+    执行K-Means聚类分析，返回聚类结果和各类均值。
+    """
     df = pd.read_csv(data_path)
     
     # 选择聚类特征
@@ -32,7 +42,9 @@ def run_kmeans_clustering(data_path='chengdu_cleaned_data.csv', n_clusters=4):
     return df, cluster_summary
 
 def run_price_prediction_model(data_path='chengdu_ml_data.csv'):
-    """执行房价预测回归模型训练与评估"""
+    """
+    执行房价预测回归模型训练与评估，返回评估结果和特征重要性。
+    """
     df = pd.read_csv(data_path)
     
     # 定义特征和目标

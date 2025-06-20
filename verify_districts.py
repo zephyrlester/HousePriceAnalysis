@@ -1,3 +1,12 @@
+# verify_districts.py
+# ------------------------------------------
+# 本脚本用于检查清洗后数据中的行政区名称标准化情况。
+# 主要功能：
+# 1. 读取清洗后数据，打印所有唯一行政区名称
+# 2. 提示用户是否存在未标准化的区名
+# 依赖库：pandas
+# ------------------------------------------
+
 import pandas as pd
 
 def check_district_names(filepath='chengdu_cleaned_data.csv'):
@@ -16,7 +25,7 @@ def check_district_names(filepath='chengdu_cleaned_data.csv'):
             print(district)
             
         print("-" * 50)
-        print("请检查以上列表，看是否存在未被标准化的名称（如 '武侯', '高新' 等）。")
+        print("请检查以上列表，是否存在未被标准化的名称（如 '武侯', '高新' 等）。")
         print("如果存在，说明您需要重新运行 2_data_cleaner.py 脚本。")
         
     except FileNotFoundError:

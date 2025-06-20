@@ -1,4 +1,12 @@
 # 1_scraper.py (最终稳定版 - 硬编码行政区URL)
+# ------------------------------------------
+# 本脚本用于爬取链家成都二手房各行政区的房源信息。
+# 主要流程：
+# 1. 预设各行政区的URL，遍历每个区的多页房源列表。
+# 2. 对每一页，解析房源信息，提取结构化数据。
+# 3. 合并所有区的数据，保存为csv文件。
+# 依赖库：requests, BeautifulSoup, pandas, time, random, urllib.parse
+# ------------------------------------------
 
 import requests
 from bs4 import BeautifulSoup
@@ -35,8 +43,16 @@ DISTRICT_URLS = {
 }
 # ===============================================
 
+
 def parse_page(html, guaranteed_district):
-    """解析单个页面的HTML，并使用已知的正确行政区进行标注"""
+    """
+    解析单个页面的HTML，提取房源信息。
+    参数：
+        html: 页面HTML源码
+        guaranteed_district: 当前行政区名称（用于标注）
+    返回：
+        data: 房源信息字典列表
+    """
     soup = BeautifulSoup(html, 'lxml')
     house_list = soup.select('ul.sellListContent > li.clear')
     
@@ -46,20 +62,24 @@ def parse_page(html, guaranteed_district):
     data = []
     for house in house_list:
         try:
+            # 标题
             title = house.select_one('div.title > a').text.strip()
+            # 小区名
             community = house.select_one('div.positionInfo > a').text.strip()
+            # 子区域
             position_links = house.select('div.positionInfo > a')
             sub_district = position_links[0].text.strip() if len(position_links) >= 1 else '未知'
-            
+            # 户型、面积、朝向、装修、楼层、建造年代、建筑类型
             house_info_str = house.select_one('div.houseInfo').text.strip()
             parts = house_info_str.split('|')
             layout, area, orientation, decoration, floor, year_built, building_type = (parts + ['未知'] * 7)[:7]
-
+            # 总价、单价
             total_price = house.select_one('div.totalPrice > span').text.strip() + '万'
             unit_price = house.select_one('div.unitPrice > span').text.strip()
-            
+            # 关注人数
             follow_info = house.select_one('div.followInfo').text.strip()
             followers = follow_info.split('/')[0].strip()
+            # 电梯
             elevator = '有电梯' if house.select_one('div.tag > span.elevator') else '无电梯'
 
             data.append({
@@ -73,8 +93,11 @@ def parse_page(html, guaranteed_district):
             continue
     return data
 
+
 def main():
-    """主函数，基于硬编码的URL列表进行分区域爬取"""
+    """
+    主函数，遍历所有行政区URL，抓取每区多页房源信息，合并保存。
+    """
     all_data = []
     print("\n" + "="*20 + " 开始基于预设列表进行分区域爬取 " + "="*20)
     
@@ -101,6 +124,7 @@ def main():
                 all_data.extend(page_data)
                 print(f"  成功抓取 {len(page_data)} 条数据。当前总数: {len(all_data)}")
                 
+                # 随机延迟，防止被封禁
                 sleep_time = random.uniform(1.5, 3.5)
                 time.sleep(sleep_time)
                 
@@ -108,6 +132,7 @@ def main():
                 print(f"  请求第 {page} 页失败: {e}")
                 break
 
+    # 保存数据
     if all_data:
         df = pd.DataFrame(all_data)
         cols_order = [
@@ -125,6 +150,7 @@ def main():
         print(df.head())
     else:
         print("未能抓取到任何数据。")
+
 
 if __name__ == '__main__':
     main()

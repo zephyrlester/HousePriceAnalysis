@@ -1,4 +1,12 @@
 # 2_data_cleaner.py (完整最终版)
+# ------------------------------------------
+# 本脚本用于对原始爬取的成都二手房数据进行清洗、转换和标准化。
+# 主要功能：
+# 1. 数据类型转换与单位去除
+# 2. 缺失值与异常值处理
+# 3. 生成可视化和机器学习两份数据集
+# 依赖库：pandas, numpy
+# ------------------------------------------
 
 import pandas as pd
 import numpy as np
@@ -39,11 +47,8 @@ def clean_data(input_path='chengdu_raw_data.csv', viz_output='chengdu_cleaned_da
     IQR_area = Q3_area - Q1_area
     lower_bound = Q1_area - 1.5 * IQR_area
     upper_bound = Q3_area + 1.5 * IQR_area
-    
-    original_rows = df.shape[0]
-    df = df[(df['Area'] >= lower_bound) & (df['Area'] <= upper_bound) & (df['Area'] > 10)]
-    print(f"根据面积IQR移除了 {original_rows - df.shape[0]} 条异常数据。")
-    
+    df = df[(df['Area'] >= lower_bound) & (df['Area'] <= upper_bound)]
+
     # --- Part 4: 地名标准化 (终极版) ---
     print("正在进行地名精确标准化...")
     DISTRICT_MAP = {

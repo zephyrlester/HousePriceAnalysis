@@ -1,4 +1,12 @@
 # 4_app.py
+# ------------------------------------------
+# 本脚本为Flask Web应用入口，负责将分析和机器学习结果以网页形式展示。
+# 主要功能：
+# 1. 启动Web服务，加载数据和模型
+# 2. 首页展示各类可视化图表和聚类/回归结果
+# 依赖库：flask, pyecharts, analysis.py, machine_learning.py
+# ------------------------------------------
+
 from flask import Flask, render_template
 from pyecharts.charts import Page
 
@@ -29,6 +37,9 @@ print("数据和模型准备就绪！")
 
 @app.route('/')
 def index():
+    """
+    首页路由，展示所有可视化图表和分析结果。
+    """
     if df_viz is None:
         return "数据文件未找到，请先运行抓取和清洗脚本。"
 
