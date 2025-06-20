@@ -1,0 +1,60 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于大数据的房价挖掘与分析系统</title>
+    <script src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>
+    <!-- 引入简单的CSS框架以美化表格 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; }
+        .container { max-width: 1600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #333; margin-top: 40px; margin-bottom: 20px; }
+        .chart-container { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+        .ml-section { padding: 20px; background-color: #fafafa; border-radius: 5px; margin-top: 30px; }
+        .table { margin: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>基于大数据的成都二手房挖掘与分析系统</h1>
+        
+        <!-- Pyecharts 可视化图表 -->
+        {{ chart_component | safe }}
+        
+        <!-- ==================== 机器学习结果展示 ==================== -->
+        <div class="ml-section">
+            <h2>K-Means 聚类结果分析</h2>
+            <p class="text-center">将房源按“面积、总价、单价”分为4类，各类别的特征均值如下：</p>
+            {{ cluster_summary_html | safe }}
+        </div>
+        
+        <div class="ml-section">
+            <h2>房价预测回归模型分析 (随机森林)</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>模型评估指标</h3>
+                    <table class="table table-bordered">
+                        <tbody>
+                            {% for metric, value in model_eval.items() %}
+                            <tr>
+                                <th>{{ metric }}</th>
+                                <td>{{ "%.4f"|format(value) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h3>特征重要性 Top 10</h3>
+                    {{ feature_imp_html | safe }}
+                </div>
+            </div>
+        </div>
+        <!-- ==================== 结束 ==================== -->
+        
+    </div>
+</body>
+</html>
